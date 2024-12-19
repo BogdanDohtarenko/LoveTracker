@@ -1,4 +1,4 @@
-package com.ideasapp.lovetracker
+package com.ideasapp.lovetracker.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -19,23 +19,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LoveTrackerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(name = "Android", modifier = Modifier.padding(innerPadding))
-                }
+                //TODO make this enable to host fragments
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(text = "Hello $name!", modifier = modifier)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LoveTrackerTheme {
-        Greeting("Android")
-    }
-}
