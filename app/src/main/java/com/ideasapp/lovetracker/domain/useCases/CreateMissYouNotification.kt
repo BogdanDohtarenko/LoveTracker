@@ -1,6 +1,10 @@
 package com.ideasapp.lovetracker.domain.useCases
 
-class CreateMissYouNotification {
-    //TODO "Not yet implemented"
-    //TODO this is the most important feature
+import com.ideasapp.lovetracker.domain.repository.NotificationsRepository
+
+class CreateMissYouNotification(private val repository: NotificationsRepository) {
+    operator fun invoke() {
+        repository.createMissYouNotification()
+    }
+
 }
