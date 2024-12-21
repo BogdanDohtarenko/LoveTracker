@@ -4,6 +4,7 @@ import com.ideasapp.lovetracker.domain.entity.SexItem
 
 interface SexRepository {
     fun addSexItem(sexItem: SexItem)
-    fun getSexItem()
-    fun getSexTasksList()
+    fun deleteSexItem(sexItem: SexItem)
+    fun getSexItem(): SexItem
+    fun getSexTasksList(): List<SexItem>
 }

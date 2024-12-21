@@ -6,4 +6,5 @@ class CreateMissYouNotification(private val repository: NotificationsRepository)
     operator fun invoke() {
         repository.createMissYouNotification()
     }
+
 }
