@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.ideasapp.lovetracker"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.ideasapp.lovetracker"
