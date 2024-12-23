@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ideasapp.lovetracker.presentation.elements.StartScreen
 import com.ideasapp.lovetracker.ui.theme.LoveTrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,7 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LoveTrackerTheme {
-                //TODO make this enable to host fragments
+                StartScreen()
             }
         }
     }
