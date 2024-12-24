@@ -35,28 +35,26 @@ fun StartScreen() {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            TextButton(
-                onClick = { /*TODO*/ }
-            ) {
+            TextButton(onClick = { /*TODO*/ }, modifier = Modifier.padding(20.dp)) {
                 Text("Sex",
                     fontSize = 26.sp)
             }
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { /*TODO*/ }, modifier = Modifier.padding(20.dp)) {
                 Text("Sleepover",
                     fontSize = 26.sp)
             }
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { /*TODO*/ }, modifier = Modifier.padding(20.dp)) {
                 Text("Topics",
                     fontSize = 26.sp)
             }
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { /*TODO*/ }, modifier = Modifier.padding(20.dp),) {
                 Text("Walks",
                     fontSize = 26.sp)
             }
             Button(
                 modifier = Modifier
                 .width(150.dp)
-                .height(190.dp)
+                .height(150.dp)
                 .padding(top = 70.dp),
                 onClick = { /*TODO*/ }, shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(red = 158, green = 70, blue = 90))) {
