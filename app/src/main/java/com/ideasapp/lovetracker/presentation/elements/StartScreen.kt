@@ -26,10 +26,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ideasapp.lovetracker.R
+import com.ideasapp.lovetracker.presentation.MainViewModel
 
-@Preview
 @Composable
-fun StartScreen() {
+fun StartScreen(
+    onClick: () -> Unit,
+) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -56,7 +58,7 @@ fun StartScreen() {
                 .width(150.dp)
                 .height(150.dp)
                 .padding(top = 70.dp),
-                onClick = { /*TODO*/ }, shape = CircleShape,
+                onClick = { onClick() }, shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(red = 158, green = 70, blue = 90))) {
                 Image(painter = painterResource(id = R.drawable.heart),
                     contentDescription = stringResource(id = R.string.heart_descr))
