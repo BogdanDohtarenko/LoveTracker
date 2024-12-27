@@ -10,6 +10,7 @@ import org.json.JSONObject
 
 object NotificationsRepositoryImpl: NotificationsRepository {
     override fun createMissYouNotification() {
+        Log.d("FCM","createMissYouNotification")
         val client = OkHttpClient()
         val json = JSONObject()
         json.put("to", "/topics/global")

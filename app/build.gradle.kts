@@ -48,6 +48,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.firebase.core)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.okhttp)
     implementation(libs.firebase.messaging)
     implementation(libs.androidx.core.ktx)
@@ -58,6 +60,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
