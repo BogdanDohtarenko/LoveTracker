@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.0"
+firebaseAdminVersion = "9.1.1"
 firebaseBom = "32.2.0"
 firebaseCore = "9.6.1"
 firebaseMessaging = "22.0.0"
@@ -12,6 +13,7 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.04.01"
+multidex = "2.0.1"
 okhttp = "4.11.0"
 firebaseDatabaseKtx = "21.0.0"
 appcompat = "1.7.0"
@@ -21,9 +23,11 @@ firebaseDatabase = "21.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-core = { module = "com.google.firebase:firebase-core", version.ref = "firebaseCore" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
+google-firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebaseAdminVersion" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

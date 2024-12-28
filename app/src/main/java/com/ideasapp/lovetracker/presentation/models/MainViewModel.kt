@@ -1,4 +1,4 @@
-package com.ideasapp.lovetracker.presentation
+package com.ideasapp.lovetracker.presentation.models
 
 import androidx.lifecycle.ViewModel
 import com.ideasapp.lovetracker.data.NotificationsRepositoryImpl

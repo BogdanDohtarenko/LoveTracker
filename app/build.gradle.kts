@@ -45,13 +45,16 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildToolsVersion = "35.0.0"
 }
 
 dependencies {
+    implementation(libs.firebase.messaging) {
+        exclude(group = "com.google.api.grpc", module = "proto-google-common-protos")
+    }
     implementation(libs.firebase.core)
     implementation(platform(libs.firebase.bom))
     implementation(libs.okhttp)
-    implementation(libs.firebase.messaging)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -60,10 +63,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.firebase.database.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.firebase.firestore)
-    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,4 +1,4 @@
-package com.ideasapp.lovetracker.presentation
+package com.ideasapp.lovetracker.presentation.app
 
 import android.app.Application
 import android.util.Log
@@ -12,14 +12,14 @@ class LoveApplication: Application() {
             val apps = FirebaseApp.getApps(this)
             if (apps.isEmpty()) {
                 FirebaseApp.initializeApp(this)
-                Log.d("FirebaseInit", "Firebase initialized successfully")
+                Log.d("FCM", "Firebase initialized successfully")
             } else {
                 for (app in apps) {
-                    Log.d("FirebaseInit", "Found Firebase app: ${app.name}")
+                    Log.d("FCM", "Found Firebase app: ${app.name}")
                 }
             }
         } catch (e: Exception) {
-            Log.e("FirebaseInit", "Error initializing Firebase", e)
+            Log.e("FCM", "Error initializing Firebase", e)
         }
     }
 }

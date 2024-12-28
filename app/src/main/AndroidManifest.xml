@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:name=".presentation.LoveApplication"
+        android:name=".presentation.app.LoveApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -24,7 +24,7 @@
             </intent-filter>
         </service>
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".presentation.activity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.LoveTracker">
             <intent-filter>
