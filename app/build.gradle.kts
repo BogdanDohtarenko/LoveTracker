@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.firebase.messaging) {
         exclude(group = "com.google.api.grpc", module = "proto-google-common-protos")
     }
+    implementation(libs.volley)
     implementation(libs.firebase.core)
     implementation(platform(libs.firebase.bom))
     implementation(libs.okhttp)
