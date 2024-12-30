@@ -4,7 +4,8 @@
 
     <!-- Permission for notifications -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:name=".presentation.app.LoveApplication"
         android:allowBackup="true"
@@ -18,7 +19,8 @@
         tools:targetApi="31">
         <service
             android:name=".data.MessagingService"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.POST_NOTIFICATIONS">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
