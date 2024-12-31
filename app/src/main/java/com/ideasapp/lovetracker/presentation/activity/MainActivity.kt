@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.android.volley.Request
@@ -16,11 +17,17 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ideasapp.lovetracker.R
+import com.ideasapp.lovetracker.domain.repository.FcmService
 import com.ideasapp.lovetracker.presentation.elements.StartScreen
 import com.ideasapp.lovetracker.ui.theme.LoveTrackerTheme
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class MainActivity : AppCompatActivity() {
@@ -69,49 +76,47 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
     private fun sendNotificationToAllDevices() {
-        val mRequestQue = Volley.newRequestQueue(this)
-
-        val json = JSONObject()
-        try {
-            json.put("to", "/topics/love")
-            val notificationObj = JSONObject()
-            notificationObj.put("title", "new Order")
-            notificationObj.put("body", "New")
-            // Replace "notification" with "data" if you want to send custom data
-            json.put("notification", notificationObj)
-
-            val url = "https://fcm.googleapis.com/fcm/send"
-            val request = object : JsonObjectRequest(
-                Request.Method.POST, url, json,
-                { response ->
-                    Log.d("MUR", "onResponse: $response")
-                },
-                { error ->
-                    Log.d("MUR", "onError: ${error.networkResponse}")
-                }
-            ) {
-                override fun getHeaders(): Map<String, String> {
-                    val headers = HashMap<String, String>()
-                    headers["content-type"] = "application/json"
-                    headers["authorization"] = "key=${R.string.server_key}"
-                    return headers
+        // 1. Get the Firebase Server Key (from your Firebase project settings)
+        val serverKey = getString(R.string.server_key) // Replace with your actual key
+        // 2. Create Retrofit instance
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://fcm.googleapis.com/fcm/send/") // Use your project ID
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        // 3. Create FCM service instance
+        val fcmService = retrofit.create(FcmService::class.java)
+        // 4. Prepare notification data
+        val notificationData = NotificationData(
+            title = "New Order",
+            body = "New"
+        )
+        // 5. Prepare FCM request
+        val fcmRequest = FcmRequest(
+            to = "/topics/love", // Use your topic name
+            notification = notificationData
+        )
+        // 6. Send the notification
+        val call = fcmService.sendNotification(fcmRequest)
+        call.enqueue(object : Callback<FcmResponse> {
+            override fun onResponse(call: Call<FcmResponse>, response: Response<FcmResponse>) {
+                if (response.isSuccessful) {
+                    val fcmResponse = response.body()
+                    Log.d("FCM", "Notification sent successfully: $fcmResponse")
+                    // Handle success (e.g., update UI, log event)
+                } else {
+                    Log.d("FCM", "Failed to send notification: ${response.errorBody()?.string()}")
+                    // Handle failure (e.g., show error message, retry)
                 }
             }
 
-            mRequestQue.add(request)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
+            override fun onFailure(call: Call<FcmResponse>, t: Throwable) {
+                Log.d("FCM", "Error sending notification: ${t.message}")
+                // Handle network errors (e.g., show error message, retry)
+            }
+        })
     }
+
 
     companion object {
         const val TOPIC = "love"
@@ -123,4 +128,18 @@ data class NotificationModel(
     val token: String,
     val title: String,
     val body: String
+)
+
+data class FcmRequest(
+    val to: String,
+    val notification: NotificationData
+)
+
+data class NotificationData(
+    val title: String,
+    val body: String
+)
+
+data class FcmResponse(
+    val message_id: String
 )
