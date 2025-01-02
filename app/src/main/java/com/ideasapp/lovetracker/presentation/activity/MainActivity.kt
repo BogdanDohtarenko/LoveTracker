@@ -17,9 +17,15 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ideasapp.lovetracker.R
+import com.ideasapp.lovetracker.data.FirebaseTokenManager
 import com.ideasapp.lovetracker.domain.repository.FcmService
 import com.ideasapp.lovetracker.presentation.elements.StartScreen
 import com.ideasapp.lovetracker.ui.theme.LoveTrackerTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Interceptor
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
@@ -77,44 +83,49 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun sendNotificationToAllDevices() {
-        // 1. Get the Firebase Server Key (from your Firebase project settings)
-        val serverKey = getString(R.string.server_key) // Replace with your actual key
-        // 2. Create Retrofit instance
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://fcm.googleapis.com/fcm/send/") // Use your project ID
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        // 3. Create FCM service instance
-        val fcmService = retrofit.create(FcmService::class.java)
-        // 4. Prepare notification data
-        val notificationData = NotificationData(
-            title = "New Order",
-            body = "New"
-        )
-        // 5. Prepare FCM request
-        val fcmRequest = FcmRequest(
-            to = "/topics/love", // Use your topic name
-            notification = notificationData
-        )
-        // 6. Send the notification
-        val call = fcmService.sendNotification(fcmRequest)
-        call.enqueue(object : Callback<FcmResponse> {
-            override fun onResponse(call: Call<FcmResponse>, response: Response<FcmResponse>) {
-                if (response.isSuccessful) {
-                    val fcmResponse = response.body()
-                    Log.d("FCM", "Notification sent successfully: $fcmResponse")
-                    // Handle success (e.g., update UI, log event)
-                } else {
-                    Log.d("FCM", "Failed to send notification: ${response.errorBody()?.string()}")
-                    // Handle failure (e.g., show error message, retry)
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val token = withContext(Dispatchers.IO) {
+                    FirebaseTokenManager.getAccessToken(this@MainActivity)
                 }
-            }
 
-            override fun onFailure(call: Call<FcmResponse>, t: Throwable) {
-                Log.d("FCM", "Error sending notification: ${t.message}")
-                // Handle network errors (e.g., show error message, retry)
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://fcm.googleapis.com/fcm/send/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                val fcmService = retrofit.create(FcmService::class.java)
+
+                val notificationData = NotificationData(
+                    title = "New Order",
+                    body = "New"
+                )
+
+                val fcmRequest = FcmRequest(
+                    to = "/topics/love",
+                    notification = notificationData
+                )
+
+                val authorizationHeader = "Bearer $token"
+
+                fcmService.sendNotification(authorizationHeader, fcmRequest)
+                    .enqueue(object : Callback<FcmResponse> {
+                        override fun onResponse(call: Call<FcmResponse>, response: Response<FcmResponse>) {
+                            if (response.isSuccessful) {
+                                val fcmResponse = response.body()
+                                Log.d("FCM", "Notification sent successfully: $fcmResponse")
+                            } else {
+                                Log.d("FCM", "Failed to send notification: ${response.errorBody()?.string()}")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<FcmResponse>, t: Throwable) {
+                            Log.d("FCM", "Error sending notification: ${t.message}")
+                        }
+                    })
+            } catch (e: Exception) {
+                Log.e("FCM", "Error: ${e.message}")
             }
-        })
+        }
     }
 
 

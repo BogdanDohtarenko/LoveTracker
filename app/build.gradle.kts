@@ -41,6 +41,9 @@ android {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
+        exclude("META-INF/DEPENDENCIES")
+    }
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
@@ -55,6 +58,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
+
+    implementation(libs.google.auth.library.oauth2.http)
 
     implementation(libs.volley)
     implementation(libs.firebase.core)
