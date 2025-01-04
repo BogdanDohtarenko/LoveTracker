@@ -26,6 +26,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
@@ -88,13 +90,21 @@ class MainActivity : AppCompatActivity() {
                 val token = withContext(Dispatchers.IO) {
                     FirebaseTokenManager.getAccessToken(this@MainActivity)
                 }
-
+                Log.d("FCM", "Authorization Header: Bearer $token")
+                val loggingInterceptor = HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                }
+                val httpClient = OkHttpClient.Builder()
+                    .addInterceptor(loggingInterceptor)
+                    .build()
                 val retrofit = Retrofit.Builder()
-                    .baseUrl("https://fcm.googleapis.com/fcm/send/")
+                    .baseUrl("https://fcm.googleapis.com/")
                     .addConverterFactory(GsonConverterFactory.create())
+                    .client(httpClient)
                     .build()
                 val fcmService = retrofit.create(FcmService::class.java)
 
+                // Create the notification payload
                 val notificationData = NotificationData(
                     title = "New Order",
                     body = "New"
@@ -107,6 +117,7 @@ class MainActivity : AppCompatActivity() {
 
                 val authorizationHeader = "Bearer $token"
 
+                // Send the notification
                 fcmService.sendNotification(authorizationHeader, fcmRequest)
                     .enqueue(object : Callback<FcmResponse> {
                         override fun onResponse(call: Call<FcmResponse>, response: Response<FcmResponse>) {
@@ -114,7 +125,9 @@ class MainActivity : AppCompatActivity() {
                                 val fcmResponse = response.body()
                                 Log.d("FCM", "Notification sent successfully: $fcmResponse")
                             } else {
-                                Log.d("FCM", "Failed to send notification: ${response.errorBody()?.string()}")
+                                val errorBody = response.errorBody()?.string()
+                                Log.d("FCM", "Failed to send notification: HTTP ${response.code()} - ${response.message()}")
+                                Log.d("FCM", "Error body: $errorBody")
                             }
                         }
 
