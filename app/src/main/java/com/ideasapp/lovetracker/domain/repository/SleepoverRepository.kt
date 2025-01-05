@@ -3,8 +3,8 @@ package com.ideasapp.lovetracker.domain.repository
 import com.ideasapp.lovetracker.domain.entity.SleepoverItem
 
 interface SleepoverRepository {
-    fun addSleepoverItem(sleepoverItem: SleepoverItem)
-    fun deleteSleepoverItem(sleepoverItem: SleepoverItem)
-    fun getSleepoverItem(): SleepoverItem
-    fun getSleepoverTasksList(): List<SleepoverItem>
+    fun addSleepoverItem(sleepoverItem: com.ideasapp.lovetracker.domain.entity.SleepoverItem)
+    fun deleteSleepoverItem(sleepoverItem: com.ideasapp.lovetracker.domain.entity.SleepoverItem)
+    fun getSleepoverItem(): com.ideasapp.lovetracker.domain.entity.SleepoverItem
+    fun getSleepoverTasksList(): List<com.ideasapp.lovetracker.domain.entity.SleepoverItem>
 }
