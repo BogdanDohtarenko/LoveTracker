@@ -6,17 +6,13 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
-import com.ideasapp.lovetracker.R
+import com.google.gson.annotations.SerializedName
 import com.ideasapp.lovetracker.data.FirebaseTokenManager
 import com.ideasapp.lovetracker.domain.repository.FcmService
 import com.ideasapp.lovetracker.presentation.elements.StartScreen
@@ -25,15 +21,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Interceptor
-import org.json.JSONException
-import org.json.JSONObject
-import java.util.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.Serializable
 
 
 class MainActivity : AppCompatActivity() {
@@ -88,25 +83,35 @@ class MainActivity : AppCompatActivity() {
                 val token = withContext(Dispatchers.IO) {
                     FirebaseTokenManager.getAccessToken(this@MainActivity)
                 }
-
+                Log.d("FCM", "Authorization Header: Bearer $token")
+                val loggingInterceptor = HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                }
+                val httpClient = OkHttpClient.Builder()
+                    .addInterceptor(loggingInterceptor)
+                    .build()
                 val retrofit = Retrofit.Builder()
-                    .baseUrl("https://fcm.googleapis.com/fcm/send/")
+                    .baseUrl("https://fcm.googleapis.com/v1/")
                     .addConverterFactory(GsonConverterFactory.create())
+                    .client(httpClient)
                     .build()
                 val fcmService = retrofit.create(FcmService::class.java)
 
                 val notificationData = NotificationData(
-                    title = "New Order",
-                    body = "New"
+                    title = "Your partner",
+                    body = "Miss you"
                 )
 
-                val fcmRequest = FcmRequest(
-                    to = "/topics/love",
+                val messageData = MessageData(
+                    topic = "love",
                     notification = notificationData
                 )
 
+                val fcmRequest = FcmRequest(message = messageData)
+
                 val authorizationHeader = "Bearer $token"
 
+                // Send the notification
                 fcmService.sendNotification(authorizationHeader, fcmRequest)
                     .enqueue(object : Callback<FcmResponse> {
                         override fun onResponse(call: Call<FcmResponse>, response: Response<FcmResponse>) {
@@ -114,7 +119,9 @@ class MainActivity : AppCompatActivity() {
                                 val fcmResponse = response.body()
                                 Log.d("FCM", "Notification sent successfully: $fcmResponse")
                             } else {
-                                Log.d("FCM", "Failed to send notification: ${response.errorBody()?.string()}")
+                                val errorBody = response.errorBody()?.string()
+                                Log.d("FCM", "Failed to send notification: HTTP ${response.code()} - ${response.message()}")
+                                Log.d("FCM", "Error body: $errorBody")
                             }
                         }
 
@@ -135,6 +142,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+
 data class NotificationModel(
     val token: String,
     val title: String,
@@ -142,14 +150,25 @@ data class NotificationModel(
 )
 
 data class FcmRequest(
-    val to: String,
+    @SerializedName("message")
+    val message: MessageData
+) : Serializable
+
+data class MessageData(
+    @SerializedName("topic")
+    val topic: String,
+
+    @SerializedName("notification")
     val notification: NotificationData
-)
+) : Serializable
 
 data class NotificationData(
+    @SerializedName("title")
     val title: String,
+
+    @SerializedName("body")
     val body: String
-)
+) : Serializable
 
 data class FcmResponse(
     val message_id: String

@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.gson)
 
     implementation(libs.google.auth.library.oauth2.http)
+    implementation(libs.logging.interceptor)
+
 
     implementation(libs.volley)
     implementation(libs.firebase.core)

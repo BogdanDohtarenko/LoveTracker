@@ -9,6 +9,9 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 
 interface FcmService {
-    @POST("fcm/send")
-    fun sendNotification(@Header("Authorization") authorization: String, @Body body: FcmRequest): Call<FcmResponse>
+    @POST("projects/lovetracker-ac855/messages:send")
+    fun sendNotification(
+        @Header("Authorization") authorization: String,
+        @Body fcmRequest: FcmRequest
+    ): Call<FcmResponse>
 }
