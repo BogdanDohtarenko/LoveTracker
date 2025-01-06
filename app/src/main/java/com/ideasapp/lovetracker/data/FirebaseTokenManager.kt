@@ -14,7 +14,7 @@ object FirebaseTokenManager {
 
     fun getAccessToken(context: Context): String {
         return try {
-            val inputStream: InputStream = context.assets.open("lovetracker-ac855-firebase-adminsdk-dr6s6-bf5bafa875.json")
+            val inputStream: InputStream = context.assets.open("lovetracker-ac855-firebase-adminsdk-dr6s6-b0f0317587.json")
 
             val credentials = GoogleCredentials
                 .fromStream(inputStream)
