@@ -1,7 +1,7 @@
 package com.ideasapp.lovetracker.domain.repository
 
-import com.ideasapp.lovetracker.presentation.activity.FcmRequest
-import com.ideasapp.lovetracker.presentation.activity.FcmResponse
+import com.ideasapp.lovetracker.domain.entity.FcmRequest
+import com.ideasapp.lovetracker.domain.entity.FcmResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Header

@@ -14,6 +14,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.annotations.SerializedName
 import com.ideasapp.lovetracker.data.FirebaseTokenManager
+import com.ideasapp.lovetracker.domain.entity.FcmRequest
+import com.ideasapp.lovetracker.domain.entity.FcmResponse
+import com.ideasapp.lovetracker.domain.entity.MessageData
+import com.ideasapp.lovetracker.domain.entity.NotificationData
 import com.ideasapp.lovetracker.domain.repository.FcmService
 import com.ideasapp.lovetracker.presentation.elements.StartScreen
 import com.ideasapp.lovetracker.ui.theme.LoveTrackerTheme
@@ -111,7 +115,6 @@ class MainActivity : AppCompatActivity() {
 
                 val authorizationHeader = "Bearer $token"
 
-                // Send the notification
                 fcmService.sendNotification(authorizationHeader, fcmRequest)
                     .enqueue(object : Callback<FcmResponse> {
                         override fun onResponse(call: Call<FcmResponse>, response: Response<FcmResponse>) {
@@ -142,34 +145,3 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-
-data class NotificationModel(
-    val token: String,
-    val title: String,
-    val body: String
-)
-
-data class FcmRequest(
-    @SerializedName("message")
-    val message: MessageData
-) : Serializable
-
-data class MessageData(
-    @SerializedName("topic")
-    val topic: String,
-
-    @SerializedName("notification")
-    val notification: NotificationData
-) : Serializable
-
-data class NotificationData(
-    @SerializedName("title")
-    val title: String,
-
-    @SerializedName("body")
-    val body: String
-) : Serializable
-
-data class FcmResponse(
-    val message_id: String
-)
