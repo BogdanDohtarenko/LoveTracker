@@ -1,13 +1,30 @@
 package com.ideasapp.lovetracker.presentation.models
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.google.firebase.messaging.FirebaseMessaging
 import com.ideasapp.lovetracker.data.NotificationsRepositoryImpl
 import com.ideasapp.lovetracker.domain.useCases.CreateMissYouNotification
+import com.ideasapp.lovetracker.presentation.activity.MainActivity.Companion.TOPIC
 
 class MainViewModel: ViewModel() {
     private val notificationRepository = NotificationsRepositoryImpl
     private val createMissYouNotification = CreateMissYouNotification(notificationRepository)
-    fun createMissYouNotification() {
-        createMissYouNotification.invoke()
+
+    fun sendNotificationToTopicLove(context: Context) {
+        createMissYouNotification.invoke(context)
     }
+
+    fun subscribeToLoveTopic() {
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("FCM", "Successfully subscribed to topic")
+                } else {
+                    Log.e("FCM", "Failed to subscribe to topic")
+                }
+            }
+    }
+
 }
