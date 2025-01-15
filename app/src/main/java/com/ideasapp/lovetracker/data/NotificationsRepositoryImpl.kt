@@ -8,6 +8,7 @@ import com.ideasapp.lovetracker.domain.entity.MessageData
 import com.ideasapp.lovetracker.domain.entity.NotificationData
 import com.ideasapp.lovetracker.domain.repository.FcmService
 import com.ideasapp.lovetracker.domain.repository.NotificationsRepository
+import com.ideasapp.lovetracker.presentation.activity.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,40 +26,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NotificationsRepositoryImpl: NotificationsRepository {
-    override fun createMissYouNotification(context: Context) {
+    override fun createMissYouNotification(context: Context, notificationData: NotificationData) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val token = withContext(Dispatchers.IO) {
-                    FirebaseTokenManager.getAccessToken(context)
-                }
-                Log.d("FCM", "Authorization Header: Bearer $token")
-                val loggingInterceptor = HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                }
-                val httpClient = OkHttpClient.Builder()
-                    .addInterceptor(loggingInterceptor)
-                    .build()
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("https://fcm.googleapis.com/v1/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(httpClient)
-                    .build()
-                val fcmService = retrofit.create(FcmService::class.java)
-
-                val notificationData = NotificationData(
-                    title = "Your partner",
-                    body = "Miss you"
-                )
-
-                val messageData = MessageData(
-                    topic = "love",
-                    notification = notificationData
-                )
-
-                val fcmRequest = FcmRequest(message = messageData)
-
-                val authorizationHeader = "Bearer $token"
-
+                val authorizationHeader = "Bearer ${getFirebaseToken(context)}"
+                val fcmService = setUpRetrofit()
+                val fcmRequest = createNotification(notificationData)
                 fcmService.sendNotification(authorizationHeader, fcmRequest)
                     .enqueue(object : Callback<FcmResponse> {
                         override fun onResponse(call: Call<FcmResponse>, response: Response<FcmResponse>) {
@@ -71,7 +44,6 @@ object NotificationsRepositoryImpl: NotificationsRepository {
                                 Log.d("FCM", "Error body: $errorBody")
                             }
                         }
-
                         override fun onFailure(call: Call<FcmResponse>, t: Throwable) {
                             Log.d("FCM", "Error sending notification: ${t.message}")
                         }
@@ -82,4 +54,32 @@ object NotificationsRepositoryImpl: NotificationsRepository {
         }
     }
 
+    private suspend fun getFirebaseToken(context: Context): String {
+        val token = withContext(Dispatchers.IO) {
+            FirebaseTokenManager.getAccessToken(context)
+        }
+        return token
+    }
+    private suspend fun setUpRetrofit(): FcmService {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+        val httpClient = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .build()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://fcm.googleapis.com/v1/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(httpClient)
+            .build()
+        return retrofit.create(FcmService::class.java)
+    }
+
+    private suspend fun createNotification(notificationData: NotificationData): FcmRequest {
+        val messageData = MessageData(
+            topic = MainActivity.TOPIC,
+            notification = notificationData
+        )
+        return FcmRequest(message = messageData)
+    }
 }

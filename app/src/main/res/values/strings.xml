@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">LoveTracker</string>
+    <string name="app_name">Love Tracker</string>
     <string name="heart_descr">heart</string>
     <string name="i_miss_you">LoveTracker</string>
+    <string name="send_notification">Send</string>
     <string name="server_key">
         BKKrRaQgS2eHO_KbbufVyoVFyXTYQFvplTbfdAA19-O7iVRB-vrELUmtkxX78Et4u5Zc6v_kNdQidCGb3J08apc
     </string>

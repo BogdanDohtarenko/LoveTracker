@@ -1,5 +1,6 @@
 package com.ideasapp.lovetracker.presentation.elements
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,11 +24,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ideasapp.lovetracker.R
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.ideasapp.lovetracker.domain.entity.NotificationData
 
 @Composable
 fun StartScreen(
-    onClick: () -> Unit,
+    onSendClick: (NotificationData) -> Unit,
 ) {
+    var showDialog by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -49,14 +56,21 @@ fun StartScreen(
             }
             Button(
                 modifier = Modifier
-                .width(150.dp)
-                .height(150.dp)
-                .padding(top = 70.dp),
-                onClick = { onClick() }, shape = CircleShape,
+                    .width(150.dp)
+                    .height(150.dp)
+                    .padding(top = 70.dp),
+                onClick = { showDialog = true }, shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(red = 158, green = 70, blue = 90))) {
                 Image(painter = painterResource(id = R.drawable.heart),
                     contentDescription = stringResource(id = R.string.heart_descr))
             }
         }
     }
+    if (showDialog) {
+        NotificationDialog(
+            onDismissRequest = { showDialog = false },
+            onSendClick = onSendClick
+        )
+    }
+
 }
